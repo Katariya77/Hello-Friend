@@ -1,16 +1,22 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 
 const navItems = [
-  { label: "Home", href: "#hero" },
-  { label: "About", href: "#about" },
-  { label: "Projects", href: "#projects" },
-  { label: "Skills", href: "#skills" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/" },
+  { label: "Projects", href: "/projects" },
+  { label: "Skills", href: "/skills" },
+];
+
+const homeAnchors = [
+  { label: "About", anchor: "about" },
+  { label: "Contact", anchor: "contact" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [location] = useLocation();
+  const isHome = location === "/" || location === "";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -18,8 +24,8 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleClick = (href: string) => {
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMenuOpen(false);
   };
 
@@ -35,13 +41,14 @@ export default function Navbar() {
         transition: "all 0.4s ease",
         background: scrolled ? "rgba(3, 1, 12, 0.88)" : "transparent",
         backdropFilter: scrolled ? "blur(24px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(167, 100, 255, 0.12)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(167,100,255,0.12)" : "none",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
       }}
     >
-      <div
+      <Link
+        href="/"
         style={{
           fontSize: "1.15rem",
           fontWeight: 800,
@@ -49,101 +56,121 @@ export default function Navbar() {
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
-          cursor: "pointer",
+          textDecoration: "none",
           letterSpacing: "-0.01em",
         }}
-        onClick={() => handleClick("#hero")}
       >
         Krishna.dev
-      </div>
+      </Link>
 
-      <div style={{ display: "flex", gap: "2rem", alignItems: "center" }} className="nav-links">
+      <div style={{ display: "flex", gap: "0.25rem", alignItems: "center" }} className="nav-links">
         {navItems.map((item) => (
-          <button
+          <Link
             key={item.href}
-            onClick={() => handleClick(item.href)}
+            href={item.href}
             style={{
+              padding: "0.4rem 0.9rem",
+              color: location === item.href ? "#c084fc" : "rgba(210,190,255,0.65)",
+              fontSize: "0.875rem",
+              textDecoration: "none",
+              fontWeight: 500,
+              borderRadius: "0.5rem",
+              transition: "all 0.2s ease",
+              background: location === item.href ? "rgba(167,100,255,0.08)" : "transparent",
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#c084fc"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = location === item.href ? "#c084fc" : "rgba(210,190,255,0.65)"; }}
+          >
+            {item.label}
+          </Link>
+        ))}
+
+        {isHome && homeAnchors.map((item) => (
+          <button
+            key={item.anchor}
+            onClick={() => scrollTo(item.anchor)}
+            style={{
+              padding: "0.4rem 0.9rem",
               background: "none",
               border: "none",
-              color: "rgba(210, 190, 255, 0.65)",
+              color: "rgba(210,190,255,0.65)",
               fontSize: "0.875rem",
               cursor: "pointer",
               fontFamily: "inherit",
-              transition: "color 0.2s ease",
-              padding: "0.25rem 0",
               fontWeight: 500,
+              borderRadius: "0.5rem",
+              transition: "all 0.2s ease",
             }}
-            onMouseEnter={(e) => { (e.target as HTMLButtonElement).style.color = "#c084fc"; }}
-            onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.color = "rgba(210, 190, 255, 0.65)"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#c084fc"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(210,190,255,0.65)"; }}
           >
             {item.label}
           </button>
         ))}
-        <a
-          href="#contact"
-          onClick={(e) => { e.preventDefault(); handleClick("#contact"); }}
-          style={{
-            padding: "0.5rem 1.4rem",
-            borderRadius: "2rem",
-            border: "1px solid rgba(167, 100, 255, 0.35)",
-            color: "#c084fc",
-            fontSize: "0.85rem",
-            textDecoration: "none",
-            transition: "all 0.3s ease",
-            background: "rgba(167, 100, 255, 0.06)",
-            fontWeight: 600,
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "rgba(167, 100, 255, 0.16)";
-            (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 25px rgba(167, 100, 255, 0.3)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "rgba(167, 100, 255, 0.06)";
-            (e.currentTarget as HTMLAnchorElement).style.boxShadow = "none";
-          }}
-        >
-          Hire Me
-        </a>
+
+        {isHome ? (
+          <button
+            onClick={() => scrollTo("contact")}
+            style={{
+              marginLeft: "0.75rem",
+              padding: "0.5rem 1.4rem",
+              borderRadius: "2rem",
+              border: "1px solid rgba(167,100,255,0.35)",
+              color: "#c084fc",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              fontFamily: "inherit",
+              background: "rgba(167,100,255,0.06)",
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(167,100,255,0.16)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 25px rgba(167,100,255,0.3)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(167,100,255,0.06)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "none"; }}
+          >
+            Hire Me
+          </button>
+        ) : (
+          <Link
+            href="/#contact"
+            style={{
+              marginLeft: "0.75rem",
+              padding: "0.5rem 1.4rem",
+              borderRadius: "2rem",
+              border: "1px solid rgba(167,100,255,0.35)",
+              color: "#c084fc",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              textDecoration: "none",
+              background: "rgba(167,100,255,0.06)",
+              transition: "all 0.3s ease",
+              display: "inline-block",
+            }}
+          >
+            Hire Me
+          </Link>
+        )}
       </div>
 
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        style={{ display: "none", background: "none", border: "none", cursor: "pointer", flexDirection: "column", gap: "5px", padding: "4px" }}
         className="mobile-btn"
+        style={{ display: "none", background: "none", border: "none", cursor: "pointer", flexDirection: "column", gap: "5px", padding: "4px" }}
         aria-label="Toggle menu"
       >
         {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            style={{
-              width: "22px",
-              height: "2px",
-              background: "#c084fc",
-              borderRadius: "1px",
-              transition: "all 0.3s ease",
-              opacity: menuOpen && i === 1 ? 0 : 1,
-              transform: menuOpen && i === 0 ? "rotate(45deg) translate(5px, 5px)" : menuOpen && i === 2 ? "rotate(-45deg) translate(5px, -5px)" : "none",
-            }}
-          />
+          <div key={i} style={{ width: "22px", height: "2px", background: "#c084fc", borderRadius: "1px", transition: "all 0.3s ease", opacity: menuOpen && i === 1 ? 0 : 1, transform: menuOpen && i === 0 ? "rotate(45deg) translate(5px, 5px)" : menuOpen && i === 2 ? "rotate(-45deg) translate(5px, -5px)" : "none" }} />
         ))}
       </button>
 
       {menuOpen && (
-        <div style={{
-          position: "absolute", top: "100%", left: 0, right: 0,
-          background: "rgba(3, 1, 12, 0.97)", backdropFilter: "blur(24px)",
-          borderBottom: "1px solid rgba(167, 100, 255, 0.12)",
-          padding: "1rem 2rem", display: "flex", flexDirection: "column", gap: "1rem",
-        }}>
+        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "rgba(3,1,12,0.97)", backdropFilter: "blur(24px)", borderBottom: "1px solid rgba(167,100,255,0.12)", padding: "1rem 2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {navItems.map((item) => (
-            <button
-              key={item.href}
-              onClick={() => handleClick(item.href)}
-              style={{
-                background: "none", border: "none", color: "rgba(210, 190, 255, 0.8)",
-                fontSize: "1rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left", padding: "0.5rem 0",
-              }}
-            >
+            <Link key={item.href} href={item.href} style={{ color: "rgba(210,190,255,0.85)", fontSize: "1rem", textDecoration: "none", padding: "0.5rem 0" }} onClick={() => setMenuOpen(false)}>
+              {item.label}
+            </Link>
+          ))}
+          {isHome && homeAnchors.map((item) => (
+            <button key={item.anchor} onClick={() => scrollTo(item.anchor)} style={{ background: "none", border: "none", color: "rgba(210,190,255,0.8)", fontSize: "1rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left", padding: "0.5rem 0" }}>
               {item.label}
             </button>
           ))}

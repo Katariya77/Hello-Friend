@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 const stats = [
-  { value: "5+", label: "Years Experience" },
-  { value: "40+", label: "Projects Built" },
-  { value: "20+", label: "Happy Clients" },
-  { value: "∞", label: "Lines of Code" },
+  { value: "5+", label: "Years Building" },
+  { value: "8+", label: "Ventures Launched" },
+  { value: "50k+", label: "Customers Served" },
+  { value: "∞", label: "Ideas in Pipeline" },
 ];
 
 export default function AboutSection() {
@@ -14,7 +14,7 @@ export default function AboutSection() {
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) setVisible(true); },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
@@ -57,27 +57,27 @@ export default function AboutSection() {
           className="about-grid"
         >
           <div>
-            <p style={{ color: "rgba(210, 185, 255, 0.75)", lineHeight: 1.9, fontSize: "1.05rem", marginBottom: "1.5rem" }}>
-              I'm a full-stack developer and creative technologist passionate about crafting
-              seamless digital experiences that merge technical precision with artistic vision.
-              With over 5 years in the industry, I specialize in building high-performance web
-              applications and immersive 3D web experiences.
+            <p style={{ color: "rgba(210,185,255,0.75)", lineHeight: 1.9, fontSize: "1.05rem", marginBottom: "1.5rem" }}>
+              I'm an entrepreneur and venture builder passionate about turning ambitious ideas
+              into real businesses. Over the past 5+ years I've launched multiple SaaS products,
+              built brands from scratch, and scaled them with creative marketing and relentless
+              execution.
             </p>
-            <p style={{ color: "rgba(210, 185, 255, 0.75)", lineHeight: 1.9, fontSize: "1.05rem", marginBottom: "2.5rem" }}>
-              My work spans interactive 3D experiences, scalable cloud architectures, and AI-powered
-              tools. I believe every line of code should serve a purpose, and every interface should
-              feel like magic — especially when it floats through space.
+            <p style={{ color: "rgba(210,185,255,0.75)", lineHeight: 1.9, fontSize: "1.05rem", marginBottom: "2.5rem" }}>
+              My edge is the rare combination of marketing intuition, strong brand sensibility,
+              and enough technical knowledge to build fast. I believe the best businesses are
+              built by people who obsess over every detail — from the strategy to the pixel.
             </p>
 
             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-              {["Next.js", "TypeScript", "Three.js", "Node.js", "WebGL"].map((tag) => (
+              {["Entrepreneur", "SaaS Builder", "Brand Strategist", "Growth Marketer", "Product Thinker"].map((tag) => (
                 <span
                   key={tag}
                   style={{
                     padding: "0.35rem 1rem",
                     borderRadius: "2rem",
-                    background: "rgba(167, 100, 255, 0.09)",
-                    border: "1px solid rgba(167, 100, 255, 0.22)",
+                    background: "rgba(167,100,255,0.09)",
+                    border: "1px solid rgba(167,100,255,0.22)",
                     color: "#c084fc",
                     fontSize: "0.82rem",
                     fontWeight: 500,
@@ -116,9 +116,9 @@ function StatCard({ stat, visible, delay }: { stat: { value: string; label: stri
       style={{
         padding: "1.75rem",
         borderRadius: "1rem",
-        background: "rgba(12, 5, 28, 0.65)",
+        background: "rgba(12,5,28,0.65)",
         backdropFilter: "blur(20px)",
-        border: `1px solid ${hovered ? "rgba(167, 100, 255, 0.4)" : "rgba(167, 100, 255, 0.15)"}`,
+        border: `1px solid ${hovered ? "rgba(167,100,255,0.4)" : "rgba(167,100,255,0.15)"}`,
         boxShadow: hovered ? "0 10px 40px rgba(0,0,0,0.5), 0 0 30px rgba(167,100,255,0.1)" : "0 6px 24px rgba(0,0,0,0.4)",
         textAlign: "center",
         transform: hovered ? "translateY(-6px)" : visible ? "translateY(0)" : "translateY(20px)",
@@ -127,20 +127,10 @@ function StatCard({ stat, visible, delay }: { stat: { value: string; label: stri
         transitionDelay: `${delay}s`,
       }}
     >
-      <div
-        style={{
-          fontSize: "2.6rem",
-          fontWeight: 800,
-          background: "linear-gradient(135deg, #a78bfa, #60a5fa)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          marginBottom: "0.5rem",
-        }}
-      >
+      <div style={{ fontSize: "2.6rem", fontWeight: 800, background: "linear-gradient(135deg, #a78bfa, #60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "0.5rem" }}>
         {stat.value}
       </div>
-      <div style={{ color: "rgba(200, 175, 255, 0.55)", fontSize: "0.82rem", fontWeight: 500 }}>
+      <div style={{ color: "rgba(200,175,255,0.55)", fontSize: "0.82rem", fontWeight: 500 }}>
         {stat.label}
       </div>
     </div>

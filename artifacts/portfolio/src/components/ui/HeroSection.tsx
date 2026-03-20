@@ -48,7 +48,7 @@ export default function HeroSection() {
             marginBottom: "2rem",
           }}
         >
-          ✦ Full-Stack Developer &amp; Creative Engineer
+          ✦ Entrepreneur &amp; Venture Builder
         </div>
 
         <h1
@@ -91,7 +91,7 @@ export default function HeroSection() {
             lineHeight: 1.75,
           }}
         >
-          Crafting immersive digital experiences at the intersection of
+          Building ventures at the intersection of
         </p>
         <p style={{ marginBottom: "3rem" }}>
           <span
@@ -104,7 +104,7 @@ export default function HeroSection() {
               backgroundClip: "text",
             }}
           >
-            code, creativity &amp; cosmos
+            marketing, branding &amp; technology
           </span>
         </p>
 

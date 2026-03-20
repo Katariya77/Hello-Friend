@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import HeroBackground from "./HeroBackground";
@@ -7,60 +7,104 @@ import ProjectsBackground from "./ProjectsBackground";
 import SkillsBackground from "./SkillsBackground";
 import ContactBackground from "./ContactBackground";
 
-interface SceneProps {
-  mouseX: number;
-  mouseY: number;
-  activeSection: string;
-}
-
 const SECTIONS = ["hero", "about", "projects", "skills", "contact"];
 
-export default function Scene({ mouseX, mouseY, activeSection }: SceneProps) {
+interface SceneProps {
+  weightsRef: React.MutableRefObject<Record<string, number>>;
+  mouseX: number;
+  mouseY: number;
+}
+
+function applyGroupOpacity(group: THREE.Group | null, weight: number) {
+  if (!group) return;
+  group.visible = weight > 0.005;
+  if (!group.visible) return;
+  group.traverse((obj) => {
+    const mesh = obj as THREE.Mesh;
+    if (!mesh.material) return;
+    const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    mats.forEach((mat) => {
+      if (mat.userData.baseOpacity === undefined) {
+        mat.userData.baseOpacity = (mat as THREE.MeshBasicMaterial).opacity ?? 1;
+      }
+      mat.transparent = true;
+      (mat as THREE.MeshBasicMaterial).opacity = mat.userData.baseOpacity * weight;
+    });
+  });
+}
+
+export default function Scene({ weightsRef, mouseX, mouseY }: SceneProps) {
   const { camera } = useThree();
   const targetX = useRef(0);
   const targetY = useRef(0);
-  const scaleProgress = useRef(0);
+  const zoomProgress = useRef(0);
 
-  const opacities = useRef<Record<string, number>>(
+  const heroRef = useRef<THREE.Group>(null);
+  const aboutRef = useRef<THREE.Group>(null);
+  const projectsRef = useRef<THREE.Group>(null);
+  const skillsRef = useRef<THREE.Group>(null);
+  const contactRef = useRef<THREE.Group>(null);
+
+  const groupRefs: Record<string, React.MutableRefObject<THREE.Group | null>> = {
+    hero: heroRef,
+    about: aboutRef,
+    projects: projectsRef,
+    skills: skillsRef,
+    contact: contactRef,
+  };
+
+  const smoothWeights = useRef<Record<string, number>>(
     Object.fromEntries(SECTIONS.map((s) => [s, s === "hero" ? 1 : 0]))
   );
 
+  useEffect(() => {
+    camera.position.set(0, 0, 25);
+  }, [camera]);
+
   useFrame((_, delta) => {
+    // Mouse parallax
     targetX.current += (mouseX * 2.5 - targetX.current) * 0.04;
     targetY.current += (mouseY * 1.5 - targetY.current) * 0.04;
-
     camera.position.x += (targetX.current - camera.position.x) * 0.05;
     camera.position.y += (targetY.current - camera.position.y) * 0.05;
 
-    scaleProgress.current = Math.min(1, scaleProgress.current + delta * 0.5);
-    const zoomIn = THREE.MathUtils.lerp(25, 15, scaleProgress.current);
-    camera.position.z += (zoomIn - camera.position.z) * 0.02;
+    // Zoom in on load
+    zoomProgress.current = Math.min(1, zoomProgress.current + delta * 0.4);
+    const targetZ = THREE.MathUtils.lerp(25, 15, zoomProgress.current);
+    camera.position.z += (targetZ - camera.position.z) * 0.03;
     camera.lookAt(0, 0, 0);
 
-    // Smooth opacity transitions
+    // Smooth weight transitions — read from ref (no React re-render needed)
     SECTIONS.forEach((s) => {
-      const target = s === activeSection ? 1 : 0;
-      opacities.current[s] += (target - opacities.current[s]) * Math.min(1, delta * 1.8);
+      const target = weightsRef.current[s] ?? 0;
+      const current = smoothWeights.current[s] ?? 0;
+      // Faster lerp = more responsive transition (delta*3 ~ 0.8s full transition)
+      smoothWeights.current[s] = current + (target - current) * Math.min(1, delta * 3);
     });
-  });
 
-  const getOpacity = (s: string) => opacities.current[s];
+    // Apply smooth weights to each section group's material opacities
+    applyGroupOpacity(heroRef.current, smoothWeights.current.hero ?? 0);
+    applyGroupOpacity(aboutRef.current, smoothWeights.current.about ?? 0);
+    applyGroupOpacity(projectsRef.current, smoothWeights.current.projects ?? 0);
+    applyGroupOpacity(skillsRef.current, smoothWeights.current.skills ?? 0);
+    applyGroupOpacity(contactRef.current, smoothWeights.current.contact ?? 0);
+  });
 
   return (
     <>
-      <group visible={opacities.current.hero > 0.01}>
-        <HeroBackground opacity={getOpacity("hero")} />
+      <group ref={heroRef}>
+        <HeroBackground />
       </group>
-      <group visible={opacities.current.about > 0.01}>
+      <group ref={aboutRef}>
         <AboutBackground />
       </group>
-      <group visible={opacities.current.projects > 0.01}>
+      <group ref={projectsRef}>
         <ProjectsBackground />
       </group>
-      <group visible={opacities.current.skills > 0.01}>
+      <group ref={skillsRef}>
         <SkillsBackground />
       </group>
-      <group visible={opacities.current.contact > 0.01}>
+      <group ref={contactRef}>
         <ContactBackground />
       </group>
     </>
