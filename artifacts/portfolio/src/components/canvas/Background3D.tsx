@@ -10,17 +10,10 @@ class WebGLErrorBoundary extends Component<
     super(props);
     this.state = { hasError: false };
   }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
+  static getDerivedStateFromError() { return { hasError: true }; }
   componentDidCatch(_error: Error, _info: ErrorInfo) {}
-
   render() {
-    if (this.state.hasError) {
-      return this.props.fallback ?? null;
-    }
+    if (this.state.hasError) return this.props.fallback ?? null;
     return this.props.children;
   }
 }
@@ -28,38 +21,22 @@ class WebGLErrorBoundary extends Component<
 interface Background3DProps {
   mouseX: number;
   mouseY: number;
+  activeSection: string;
 }
 
-export default function Background3D({ mouseX, mouseY }: Background3DProps) {
+export default function Background3D({ mouseX, mouseY, activeSection }: Background3DProps) {
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: 0,
-        pointerEvents: "none",
-      }}
-    >
+    <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 0, pointerEvents: "none" }}>
       <WebGLErrorBoundary fallback={null}>
         <Canvas
-          camera={{ position: [0, 0, 20], fov: 60, near: 0.1, far: 1000 }}
-          gl={{
-            antialias: false,
-            powerPreference: "high-performance",
-            alpha: true,
-            failIfMajorPerformanceCaveat: false,
-          }}
+          camera={{ position: [0, 0, 15], fov: 65, near: 0.1, far: 2000 }}
+          gl={{ antialias: false, powerPreference: "high-performance", alpha: true, failIfMajorPerformanceCaveat: false }}
           dpr={[1, 1.5]}
           style={{ background: "transparent" }}
-          onCreated={({ gl }) => {
-            gl.setClearAlpha(0);
-          }}
+          onCreated={({ gl }) => { gl.setClearAlpha(0); }}
         >
           <Suspense fallback={null}>
-            <Scene mouseX={mouseX} mouseY={mouseY} />
+            <Scene mouseX={mouseX} mouseY={mouseY} activeSection={activeSection} />
           </Suspense>
         </Canvas>
       </WebGLErrorBoundary>

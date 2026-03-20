@@ -8,9 +8,12 @@ import ContactSection from "@/components/ui/ContactSection";
 
 const Background3D = lazy(() => import("@/components/canvas/Background3D"));
 
+const SECTIONS = ["hero", "about", "projects", "skills", "contact"];
+
 function App() {
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
+  const [activeSection, setActiveSection] = useState("hero");
   const rafRef = useRef<number | null>(null);
   const targetMX = useRef(0);
   const targetMY = useRef(0);
@@ -36,17 +39,32 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    SECTIONS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+            setActiveSection(id);
+          }
+        },
+        { threshold: 0.3 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
   return (
-    <div
-      style={{
-        position: "relative",
-        minHeight: "100vh",
-        background: "#050505",
-        overflowX: "hidden",
-      }}
-    >
+    <div style={{ position: "relative", minHeight: "100vh", background: "#050505", overflowX: "hidden" }}>
       <Suspense fallback={null}>
-        <Background3D mouseX={mouseX} mouseY={mouseY} />
+        <Background3D mouseX={mouseX} mouseY={mouseY} activeSection={activeSection} />
       </Suspense>
 
       <div style={{ position: "relative", zIndex: 10 }}>

@@ -19,8 +19,7 @@ export default function Navbar() {
   }, []);
 
   const handleClick = (href: string) => {
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
     setMenuOpen(false);
   };
 
@@ -33,14 +32,10 @@ export default function Navbar() {
         right: 0,
         zIndex: 100,
         padding: scrolled ? "0.75rem 2rem" : "1.25rem 2rem",
-        transition: "all 0.3s ease",
-        background: scrolled
-          ? "rgba(5, 3, 15, 0.85)"
-          : "transparent",
-        backdropFilter: scrolled ? "blur(20px)" : "none",
-        borderBottom: scrolled
-          ? "1px solid rgba(167, 100, 255, 0.15)"
-          : "none",
+        transition: "all 0.4s ease",
+        background: scrolled ? "rgba(3, 1, 12, 0.88)" : "transparent",
+        backdropFilter: scrolled ? "blur(24px)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(167, 100, 255, 0.12)" : "none",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -48,27 +43,21 @@ export default function Navbar() {
     >
       <div
         style={{
-          fontSize: "1.25rem",
-          fontWeight: 700,
-          background: "linear-gradient(135deg, #a78bfa, #60a5fa)",
+          fontSize: "1.15rem",
+          fontWeight: 800,
+          background: "linear-gradient(135deg, #c084fc, #818cf8)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
           cursor: "pointer",
+          letterSpacing: "-0.01em",
         }}
         onClick={() => handleClick("#hero")}
       >
-        Alex.dev
+        Krishna.dev
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "2rem",
-          alignItems: "center",
-        }}
-        className="hidden-mobile"
-      >
+      <div style={{ display: "flex", gap: "2rem", alignItems: "center" }} className="nav-links">
         {navItems.map((item) => (
           <button
             key={item.href}
@@ -76,50 +65,40 @@ export default function Navbar() {
             style={{
               background: "none",
               border: "none",
-              color: "rgba(255, 255, 255, 0.7)",
-              fontSize: "0.9rem",
+              color: "rgba(210, 190, 255, 0.65)",
+              fontSize: "0.875rem",
               cursor: "pointer",
               fontFamily: "inherit",
               transition: "color 0.2s ease",
               padding: "0.25rem 0",
-              position: "relative",
+              fontWeight: 500,
             }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLButtonElement).style.color = "#a78bfa";
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLButtonElement).style.color =
-                "rgba(255, 255, 255, 0.7)";
-            }}
+            onMouseEnter={(e) => { (e.target as HTMLButtonElement).style.color = "#c084fc"; }}
+            onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.color = "rgba(210, 190, 255, 0.65)"; }}
           >
             {item.label}
           </button>
         ))}
         <a
           href="#contact"
-          onClick={(e) => {
-            e.preventDefault();
-            handleClick("#contact");
-          }}
+          onClick={(e) => { e.preventDefault(); handleClick("#contact"); }}
           style={{
-            padding: "0.5rem 1.25rem",
+            padding: "0.5rem 1.4rem",
             borderRadius: "2rem",
-            border: "1px solid rgba(167, 100, 255, 0.4)",
-            color: "#a78bfa",
-            fontSize: "0.875rem",
+            border: "1px solid rgba(167, 100, 255, 0.35)",
+            color: "#c084fc",
+            fontSize: "0.85rem",
             textDecoration: "none",
             transition: "all 0.3s ease",
-            background: "rgba(167, 100, 255, 0.05)",
+            background: "rgba(167, 100, 255, 0.06)",
+            fontWeight: 600,
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background =
-              "rgba(167, 100, 255, 0.15)";
-            (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-              "0 0 20px rgba(167, 100, 255, 0.3)";
+            (e.currentTarget as HTMLAnchorElement).style.background = "rgba(167, 100, 255, 0.16)";
+            (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 25px rgba(167, 100, 255, 0.3)";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background =
-              "rgba(167, 100, 255, 0.05)";
+            (e.currentTarget as HTMLAnchorElement).style.background = "rgba(167, 100, 255, 0.06)";
             (e.currentTarget as HTMLAnchorElement).style.boxShadow = "none";
           }}
         >
@@ -129,16 +108,8 @@ export default function Navbar() {
 
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        style={{
-          display: "none",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          flexDirection: "column",
-          gap: "5px",
-          padding: "4px",
-        }}
-        className="mobile-menu-btn"
+        style={{ display: "none", background: "none", border: "none", cursor: "pointer", flexDirection: "column", gap: "5px", padding: "4px" }}
+        className="mobile-btn"
         aria-label="Toggle menu"
       >
         {[0, 1, 2].map((i) => (
@@ -147,52 +118,30 @@ export default function Navbar() {
             style={{
               width: "22px",
               height: "2px",
-              background: "#a78bfa",
+              background: "#c084fc",
               borderRadius: "1px",
               transition: "all 0.3s ease",
-              transform:
-                menuOpen && i === 0
-                  ? "rotate(45deg) translate(5px, 5px)"
-                  : menuOpen && i === 2
-                  ? "rotate(-45deg) translate(5px, -5px)"
-                  : menuOpen && i === 1
-                  ? "opacity(0)"
-                  : "none",
               opacity: menuOpen && i === 1 ? 0 : 1,
+              transform: menuOpen && i === 0 ? "rotate(45deg) translate(5px, 5px)" : menuOpen && i === 2 ? "rotate(-45deg) translate(5px, -5px)" : "none",
             }}
           />
         ))}
       </button>
 
       {menuOpen && (
-        <div
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            background: "rgba(5, 3, 15, 0.97)",
-            backdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(167, 100, 255, 0.15)",
-            padding: "1rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-          }}
-        >
+        <div style={{
+          position: "absolute", top: "100%", left: 0, right: 0,
+          background: "rgba(3, 1, 12, 0.97)", backdropFilter: "blur(24px)",
+          borderBottom: "1px solid rgba(167, 100, 255, 0.12)",
+          padding: "1rem 2rem", display: "flex", flexDirection: "column", gap: "1rem",
+        }}>
           {navItems.map((item) => (
             <button
               key={item.href}
               onClick={() => handleClick(item.href)}
               style={{
-                background: "none",
-                border: "none",
-                color: "rgba(255, 255, 255, 0.8)",
-                fontSize: "1rem",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                textAlign: "left",
-                padding: "0.5rem 0",
+                background: "none", border: "none", color: "rgba(210, 190, 255, 0.8)",
+                fontSize: "1rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left", padding: "0.5rem 0",
               }}
             >
               {item.label}
@@ -203,8 +152,8 @@ export default function Navbar() {
 
       <style>{`
         @media (max-width: 768px) {
-          .hidden-mobile { display: none !important; }
-          .mobile-menu-btn { display: flex !important; }
+          .nav-links { display: none !important; }
+          .mobile-btn { display: flex !important; }
         }
       `}</style>
     </nav>
