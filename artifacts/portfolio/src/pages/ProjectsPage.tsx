@@ -92,62 +92,52 @@ const statusColors: Record<string, string> = {
   "Coming Soon": "#6366f1",
 };
 
+const categories = ["All", "SaaS", "AI", "Marketing", "Design"];
+
 export default function ProjectsPage() {
   const [filter, setFilter] = useState("All");
-  const categories = ["All", "SaaS", "AI", "Marketing", "Design"];
 
   const filtered = filter === "All"
     ? allProjects
     : allProjects.filter((p) => p.tags.includes(filter));
 
   return (
-    <div style={{ background: "#01010a", minHeight: "100vh", color: "white", fontFamily: "Inter, sans-serif", overflowX: "hidden" }}>
+    <div style={{ background: "#01010a", minHeight: "200vh", color: "white", fontFamily: "Inter, sans-serif", overflowX: "hidden" }}>
       <PageCanvas>
         <MoonBackground />
       </PageCanvas>
 
-      <div style={{ position: "relative", zIndex: 1 }}>
-        {/* Back nav */}
-        <div style={{ padding: "1.5rem 2rem", display: "flex", alignItems: "center", gap: "1rem", borderBottom: "1px solid rgba(167,100,255,0.1)", backdropFilter: "blur(20px)", background: "rgba(1,1,10,0.6)", position: "sticky", top: 0, zIndex: 10 }}>
-          <Link href="/" style={{ color: "#a78bfa", textDecoration: "none", fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.4rem", transition: "color 0.2s" }}>
-            ← Back to Home
-          </Link>
-          <span style={{ color: "rgba(167,100,255,0.3)" }}>|</span>
-          <span style={{ color: "rgba(200,180,255,0.5)", fontSize: "0.9rem" }}>All Projects</span>
+      {/* Fixed top nav */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.25rem 2rem", display: "flex", alignItems: "center", gap: "1rem", backdropFilter: "blur(20px)", background: "rgba(1,1,10,0.5)", borderBottom: "1px solid rgba(167,100,255,0.08)" }}>
+        <Link href="/" style={{ color: "#a78bfa", textDecoration: "none", fontSize: "0.9rem" }}>← Back to Home</Link>
+        <span style={{ color: "rgba(167,100,255,0.3)" }}>|</span>
+        <span style={{ color: "rgba(200,180,255,0.5)", fontSize: "0.9rem" }}>Projects</span>
+      </div>
+
+      {/* SECTION 1 — Full screen, background visible first */}
+      <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1, textAlign: "center", padding: "0 1.5rem" }}>
+        <span style={{ color: "#a78bfa", fontSize: "0.8rem", letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 600, marginBottom: "1.25rem", display: "block" }}>✦ My Work</span>
+        <h1 style={{ fontSize: "clamp(3rem, 8vw, 6rem)", fontWeight: 800, background: "linear-gradient(135deg, #ffffff, #c084fc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", letterSpacing: "-0.03em", lineHeight: 1.05, marginBottom: "1.5rem" }}>
+          Projects &amp;<br />Ventures
+        </h1>
+        <p style={{ color: "rgba(200,180,255,0.5)", fontSize: "1.05rem", maxWidth: "420px", lineHeight: 1.7 }}>
+          SaaS products and ventures I've built, launched, and scaled — explored under a lunar sky.
+        </p>
+        <div style={{ position: "absolute", bottom: "2.5rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", opacity: 0.5, animation: "bounce 2.5s ease-in-out infinite" }}>
+          <span style={{ color: "#c084fc", fontSize: "0.7rem", letterSpacing: "0.12em" }}>SCROLL</span>
+          <div style={{ width: "1px", height: "40px", background: "linear-gradient(to bottom, #a78bfa, transparent)" }} />
         </div>
+        <style>{`@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }`}</style>
+      </div>
 
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "4rem 1.5rem" }}>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <span style={{ color: "#a78bfa", fontSize: "0.8rem", letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "1rem" }}>
-              ✦ My Work
-            </span>
-            <h1 style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", fontWeight: 800, background: "linear-gradient(135deg, #ffffff, #c084fc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "1rem" }}>
-              Projects &amp; Ventures
-            </h1>
-            <p style={{ color: "rgba(200,180,255,0.55)", maxWidth: "500px", margin: "0 auto", lineHeight: 1.7 }}>
-              SaaS products and ventures I've built, launched, and scaled.
-            </p>
-          </div>
-
+      {/* SECTION 2 — Projects content */}
+      <div style={{ position: "relative", zIndex: 1, background: "linear-gradient(to bottom, transparent, rgba(1,1,10,0.92) 5%, rgba(1,1,10,0.96) 100%)", paddingTop: "4rem", paddingBottom: "6rem" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
           {/* Filters */}
           <div style={{ display: "flex", gap: "0.6rem", justifyContent: "center", marginBottom: "3rem", flexWrap: "wrap" }}>
             {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFilter(cat)}
-                style={{
-                  padding: "0.5rem 1.2rem",
-                  borderRadius: "2rem",
-                  border: `1px solid ${filter === cat ? "rgba(167,100,255,0.6)" : "rgba(167,100,255,0.2)"}`,
-                  background: filter === cat ? "rgba(167,100,255,0.15)" : "rgba(167,100,255,0.04)",
-                  color: filter === cat ? "#c084fc" : "rgba(200,180,255,0.55)",
-                  fontSize: "0.85rem",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  fontWeight: filter === cat ? 600 : 400,
-                  transition: "all 0.2s ease",
-                }}
-              >
+              <button key={cat} onClick={() => setFilter(cat)}
+                style={{ padding: "0.5rem 1.2rem", borderRadius: "2rem", border: `1px solid ${filter === cat ? "rgba(167,100,255,0.6)" : "rgba(167,100,255,0.2)"}`, background: filter === cat ? "rgba(167,100,255,0.15)" : "rgba(167,100,255,0.04)", color: filter === cat ? "#c084fc" : "rgba(200,180,255,0.55)", fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit", fontWeight: filter === cat ? 600 : 400, transition: "all 0.2s ease" }}>
                 {cat}
               </button>
             ))}
@@ -155,7 +145,7 @@ export default function ProjectsPage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.5rem" }}>
             {filtered.map((project, i) => (
-              <FullProjectCard key={i} project={project} />
+              <ProjectCard key={i} project={project} />
             ))}
           </div>
         </div>
@@ -164,77 +154,36 @@ export default function ProjectsPage() {
   );
 }
 
-function FullProjectCard({ project }: { project: typeof allProjects[0] }) {
+function ProjectCard({ project }: { project: typeof allProjects[0] }) {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        borderRadius: "1.25rem",
-        background: "rgba(5, 2, 18, 0.8)",
-        backdropFilter: "blur(24px)",
-        border: `1px solid ${hovered ? `${project.accent}50` : "rgba(167,100,255,0.12)"}`,
-        boxShadow: hovered ? `0 25px 60px rgba(0,0,0,0.7), 0 0 50px ${project.accent}25` : "0 6px 30px rgba(0,0,0,0.5)",
-        transform: hovered ? "translateY(-8px)" : "translateY(0)",
-        transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-        overflow: "hidden",
-      }}
-    >
-      {/* Preview image area */}
-      <div style={{ height: "180px", background: project.gradient, position: "relative", overflow: "hidden" }}>
+    <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      style={{ borderRadius: "1.25rem", background: "rgba(5,2,18,0.8)", backdropFilter: "blur(24px)", border: `1px solid ${hovered ? `${project.accent}50` : "rgba(167,100,255,0.12)"}`, boxShadow: hovered ? `0 25px 60px rgba(0,0,0,0.7), 0 0 50px ${project.accent}25` : "0 6px 30px rgba(0,0,0,0.5)", transform: hovered ? "translateY(-8px)" : "translateY(0)", transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)", overflow: "hidden" }}>
+      {/* Preview */}
+      <div style={{ height: "175px", background: project.gradient, position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.2)" }} />
-        {/* Mock UI chrome */}
         <div style={{ position: "absolute", top: "12px", left: "12px", display: "flex", gap: "5px" }}>
           {["#ff5f57", "#febc2e", "#28c840"].map((c, i) => <div key={i} style={{ width: "8px", height: "8px", borderRadius: "50%", background: c }} />)}
         </div>
-        <div style={{ position: "absolute", top: "10px", left: "50%", transform: "translateX(-50%)", background: "rgba(255,255,255,0.12)", borderRadius: "4px", padding: "2px 14px", fontSize: "0.65rem", color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap" }}>
-          {project.name.toLowerCase().replace(/\s/g, "")}.io
+        <div style={{ position: "absolute", inset: "38px 14px 14px", background: "rgba(255,255,255,0.06)", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: "2rem", opacity: 0.35 }}>◈</span>
         </div>
-        <div style={{ position: "absolute", inset: "40px 16px 16px", background: "rgba(255,255,255,0.06)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: "2.5rem", opacity: 0.4 }}>◈</span>
-        </div>
-        {/* Status badge */}
-        <div style={{ position: "absolute", top: "10px", right: "10px", padding: "3px 10px", borderRadius: "1rem", background: `${statusColors[project.status]}20`, border: `1px solid ${statusColors[project.status]}50`, color: statusColors[project.status], fontSize: "0.7rem", fontWeight: 600 }}>
+        <div style={{ position: "absolute", top: "10px", right: "10px", padding: "3px 10px", borderRadius: "1rem", background: `${statusColors[project.status]}20`, border: `1px solid ${statusColors[project.status]}50`, color: statusColors[project.status], fontSize: "0.68rem", fontWeight: 600 }}>
           {project.status}
         </div>
       </div>
-
       <div style={{ padding: "1.5rem" }}>
-        <h3 style={{ fontSize: "1.15rem", fontWeight: 700, color: "white", marginBottom: "0.25rem" }}>{project.name}</h3>
-        <p style={{ color: project.accent, fontSize: "0.8rem", fontWeight: 600, marginBottom: "0.75rem", filter: "brightness(1.3)" }}>{project.tagline}</p>
-        <p style={{ color: "rgba(200,180,255,0.6)", fontSize: "0.85rem", lineHeight: 1.7, marginBottom: "1.25rem" }}>{project.description}</p>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.25rem" }}>
+        <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "white", marginBottom: "0.2rem" }}>{project.name}</h3>
+        <p style={{ color: project.accent, fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.65rem", filter: "brightness(1.3)" }}>{project.tagline}</p>
+        <p style={{ color: "rgba(200,180,255,0.6)", fontSize: "0.83rem", lineHeight: 1.7, marginBottom: "1.1rem" }}>{project.description}</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.1rem" }}>
           {project.tags.map((tag) => (
-            <span key={tag} style={{ padding: "0.2rem 0.65rem", borderRadius: "2rem", background: `${project.accent}10`, border: `1px solid ${project.accent}25`, color: project.accent, fontSize: "0.7rem", fontWeight: 500, filter: "brightness(1.3)" }}>
-              {tag}
-            </span>
+            <span key={tag} style={{ padding: "0.2rem 0.65rem", borderRadius: "2rem", background: `${project.accent}10`, border: `1px solid ${project.accent}25`, color: project.accent, fontSize: "0.7rem", fontWeight: 500, filter: "brightness(1.3)" }}>{tag}</span>
           ))}
         </div>
-
-        <a
-          href={project.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.5rem",
-            padding: "0.65rem 1.25rem",
-            borderRadius: "0.65rem",
-            background: hovered ? `${project.accent}20` : "rgba(255,255,255,0.05)",
-            border: `1px solid ${hovered ? `${project.accent}50` : "rgba(255,255,255,0.1)"}`,
-            color: hovered ? project.accent : "rgba(255,255,255,0.7)",
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            textDecoration: "none",
-            transition: "all 0.3s ease",
-            fontFamily: "inherit",
-          }}
-        >
+        <a href={project.url} target="_blank" rel="noopener noreferrer"
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem", padding: "0.6rem 1rem", borderRadius: "0.65rem", background: hovered ? `${project.accent}18` : "rgba(255,255,255,0.04)", border: `1px solid ${hovered ? `${project.accent}45` : "rgba(255,255,255,0.08)"}`, color: hovered ? project.accent : "rgba(255,255,255,0.65)", fontSize: "0.82rem", fontWeight: 600, textDecoration: "none", transition: "all 0.3s ease", fontFamily: "inherit" }}>
           Visit Project ↗
         </a>
       </div>

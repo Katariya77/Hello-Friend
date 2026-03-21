@@ -3,7 +3,6 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 function Stars({ count = 3000 }) {
-  const ref = useRef<THREE.Points>(null);
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -13,9 +12,8 @@ function Stars({ count = 3000 }) {
     }
     return arr;
   }, [count]);
-
   return (
-    <points ref={ref}>
+    <points>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
@@ -25,48 +23,79 @@ function Stars({ count = 3000 }) {
 }
 
 function Moon() {
+  const groupRef = useRef<THREE.Group>(null);
   const moonRef = useRef<THREE.Mesh>(null);
-  const rimRef = useRef<THREE.Mesh>(null);
+  const coronaRef = useRef<THREE.Mesh>(null);
+  const shadowRef = useRef<THREE.Mesh>(null);
 
-  useFrame((_, delta) => {
-    if (moonRef.current) moonRef.current.rotation.y += delta * 0.05;
-    if (rimRef.current) rimRef.current.rotation.y -= delta * 0.03;
-  });
-
-  const craterPositions = useMemo(() => {
-    return Array.from({ length: 18 }, () => ({
+  const craterPositions = useMemo(() => (
+    Array.from({ length: 22 }, () => ({
       phi: Math.random() * Math.PI,
       theta: Math.random() * Math.PI * 2,
-      r: 0.08 + Math.random() * 0.14,
-      depth: 0.025 + Math.random() * 0.04,
-    }));
-  }, []);
+      r: 0.06 + Math.random() * 0.18,
+    }))
+  ), []);
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    // Moon drifts slowly — clearly animated, not a static PNG
+    if (groupRef.current) {
+      groupRef.current.position.x = 8 + Math.sin(t * 0.12) * 3.5;
+      groupRef.current.position.y = 2 + Math.cos(t * 0.09) * 2;
+      groupRef.current.position.z = -20 + Math.sin(t * 0.07) * 2;
+    }
+    // Moon self-rotation — visible on the surface texture
+    if (moonRef.current) moonRef.current.rotation.y += 0.003;
+    // Pulsing corona
+    if (coronaRef.current) {
+      const mat = coronaRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.07 + Math.sin(t * 1.2) * 0.04;
+    }
+    // Shadow side flicker (terminator line simulation)
+    if (shadowRef.current) {
+      shadowRef.current.rotation.y = t * 0.003;
+    }
+  });
 
   return (
-    <group position={[8, 2, -20]}>
-      {/* Moon sphere */}
+    <group ref={groupRef} position={[8, 2, -20]}>
+      {/* Main moon body */}
       <mesh ref={moonRef}>
-        <sphereGeometry args={[6, 48, 48]} />
-        <meshStandardMaterial color="#c8c8d0" roughness={0.95} metalness={0.05} />
+        <sphereGeometry args={[6, 64, 64]} />
+        <meshStandardMaterial color="#b8b8c8" roughness={0.98} metalness={0.02} />
+      </mesh>
+
+      {/* Dark side terminator shadow */}
+      <mesh ref={shadowRef}>
+        <sphereGeometry args={[6.02, 32, 32]} />
+        <meshBasicMaterial color="#000010" transparent opacity={0.45} side={THREE.FrontSide} />
       </mesh>
 
       {/* Craters */}
       {craterPositions.map((c, i) => {
-        const x = Math.sin(c.phi) * Math.cos(c.theta) * 6.02;
-        const y = Math.cos(c.phi) * 6.02;
-        const z = Math.sin(c.phi) * Math.sin(c.theta) * 6.02;
+        const x = Math.sin(c.phi) * Math.cos(c.theta) * 6.05;
+        const y = Math.cos(c.phi) * 6.05;
+        const z = Math.sin(c.phi) * Math.sin(c.theta) * 6.05;
+        const normal = new THREE.Vector3(x, y, z).normalize();
+        const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
         return (
-          <mesh key={i} position={[x, y, z]} lookAt={new THREE.Vector3(0, 0, 0)}>
-            <circleGeometry args={[c.r, 16]} />
-            <meshStandardMaterial color="#9a9aaa" roughness={1} transparent opacity={0.85} />
+          <mesh key={i} position={[x, y, z]} quaternion={quat}>
+            <ringGeometry args={[c.r * 0.5, c.r, 20]} />
+            <meshStandardMaterial color="#888898" roughness={1} transparent opacity={0.75} />
           </mesh>
         );
       })}
 
-      {/* Atmospheric glow rim */}
-      <mesh ref={rimRef}>
-        <sphereGeometry args={[6.3, 32, 32]} />
-        <meshStandardMaterial color="#8888cc" transparent opacity={0.08} side={THREE.BackSide} />
+      {/* Glowing corona / atmosphere */}
+      <mesh ref={coronaRef}>
+        <sphereGeometry args={[6.6, 32, 32]} />
+        <meshBasicMaterial color="#9999cc" transparent opacity={0.08} side={THREE.BackSide} />
+      </mesh>
+
+      {/* Outer glow halo */}
+      <mesh>
+        <sphereGeometry args={[8, 24, 24]} />
+        <meshBasicMaterial color="#6666aa" transparent opacity={0.025} side={THREE.BackSide} />
       </mesh>
     </group>
   );
@@ -78,14 +107,14 @@ function Earth() {
     if (earthRef.current) earthRef.current.rotation.y += delta * 0.08;
   });
   return (
-    <group position={[-20, 10, -60]}>
+    <group position={[-22, 12, -65]}>
       <mesh ref={earthRef}>
-        <sphereGeometry args={[4, 32, 32]} />
+        <sphereGeometry args={[4.5, 32, 32]} />
         <meshStandardMaterial color="#1a4a8a" roughness={0.7} metalness={0.1} />
       </mesh>
       <mesh>
-        <sphereGeometry args={[4.15, 32, 32]} />
-        <meshStandardMaterial color="#3377dd" transparent opacity={0.12} side={THREE.BackSide} />
+        <sphereGeometry args={[4.7, 24, 24]} />
+        <meshBasicMaterial color="#3377dd" transparent opacity={0.1} side={THREE.BackSide} />
       </mesh>
     </group>
   );
@@ -94,25 +123,27 @@ function Earth() {
 function MoonDust() {
   const ref = useRef<THREE.Points>(null);
   const data = useMemo(() => {
-    const count = 400;
+    const count = 600;
     const positions = new Float32Array(count * 3);
-    const velocities = new Float32Array(count);
+    const speeds = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 40;
-      positions[i * 3 + 1] = -12 + Math.random() * 4;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
-      velocities[i] = 0.01 + Math.random() * 0.03;
+      positions[i * 3] = (Math.random() - 0.5) * 50;
+      positions[i * 3 + 1] = -14 + Math.random() * 5;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
+      speeds[i] = 0.008 + Math.random() * 0.025;
     }
-    return { positions, velocities };
+    return { positions, speeds, count };
   }, []);
 
   useFrame((state) => {
     if (!ref.current) return;
     const pos = ref.current.geometry.attributes.position;
-    for (let i = 0; i < 400; i++) {
-      pos.setY(i, -12 + ((Math.sin(state.clock.elapsedTime * data.velocities[i] + i) + 1) * 3));
+    for (let i = 0; i < data.count; i++) {
+      const y = -14 + ((Math.sin(state.clock.elapsedTime * data.speeds[i] + i * 0.4) + 1) * 3.5);
+      pos.setY(i, y);
     }
     pos.needsUpdate = true;
+    ref.current.rotation.y = state.clock.elapsedTime * 0.01;
   });
 
   return (
@@ -120,32 +151,29 @@ function MoonDust() {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[data.positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial color="#d0d0e0" size={0.08} sizeAttenuation transparent opacity={0.4} />
+      <pointsMaterial color="#d0d0e0" size={0.07} sizeAttenuation transparent opacity={0.35} />
     </points>
   );
 }
 
-function CraterField() {
+function LunarSurface() {
   const craters = useMemo(() =>
-    Array.from({ length: 12 }, (_, i) => ({
-      x: (Math.random() - 0.5) * 60,
-      z: -5 - Math.random() * 30,
-      r: 1 + Math.random() * 4,
-      i,
+    Array.from({ length: 14 }, () => ({
+      x: (Math.random() - 0.5) * 70,
+      z: -4 - Math.random() * 35,
+      r: 1.2 + Math.random() * 5,
     })), []);
 
   return (
-    <group position={[0, -14, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      {/* Ground plane */}
+    <group position={[0, -15, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <mesh>
-        <planeGeometry args={[200, 200]} />
-        <meshStandardMaterial color="#7a7a8a" roughness={1} />
+        <planeGeometry args={[220, 220]} />
+        <meshStandardMaterial color="#72728a" roughness={1} />
       </mesh>
-      {/* Crater rings */}
-      {craters.map((c) => (
-        <mesh key={c.i} position={[c.x, c.z, 0.01]}>
-          <ringGeometry args={[c.r * 0.6, c.r, 32]} />
-          <meshStandardMaterial color="#666678" roughness={1} transparent opacity={0.7} />
+      {craters.map((c, i) => (
+        <mesh key={i} position={[c.x, c.z, 0.02]}>
+          <ringGeometry args={[c.r * 0.55, c.r, 36]} />
+          <meshStandardMaterial color="#5a5a70" roughness={1} transparent opacity={0.65} />
         </mesh>
       ))}
     </group>
@@ -156,14 +184,14 @@ export default function MoonBackground() {
   return (
     <>
       <color attach="background" args={["#01010a"]} />
-      <ambientLight intensity={0.15} />
-      <directionalLight position={[20, 10, 5]} intensity={1.2} color="#fff8ee" />
+      <ambientLight intensity={0.12} />
+      <directionalLight position={[20, 10, 5]} intensity={1.4} color="#fff8ee" castShadow />
       <Stars />
       <Moon />
       <Earth />
       <MoonDust />
-      <CraterField />
-      <fog attach="fog" args={["#01010a", 60, 180]} />
+      <LunarSurface />
+      <fog attach="fog" args={["#01010a", 70, 200]} />
     </>
   );
 }
