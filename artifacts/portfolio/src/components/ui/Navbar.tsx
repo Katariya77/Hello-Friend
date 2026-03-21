@@ -40,7 +40,7 @@ export default function Navbar() {
       display: "flex", alignItems: "center", justifyContent: "space-between",
     }}>
       <Link href="/" style={{ fontSize: "1.15rem", fontWeight: 800, background: "linear-gradient(135deg, #c084fc, #818cf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", textDecoration: "none", letterSpacing: "-0.01em" }}>
-        Krishna.dev
+        Krishna Katariya
       </Link>
 
       <div style={{ display: "flex", gap: "0.15rem", alignItems: "center" }} className="nav-links">
