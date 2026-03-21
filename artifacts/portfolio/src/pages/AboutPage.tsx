@@ -36,54 +36,21 @@ function PhotoPlaceholder() {
         width: "220px",
         height: "220px",
         borderRadius: "50%",
-        background: "linear-gradient(135deg, #1a0a3a 0%, #0a1a4a 50%, #1a0a3a 100%)",
         border: "2px solid rgba(167,100,255,0.3)",
         position: "relative",
         zIndex: 2,
         overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
       }}>
-        {/* Silhouette suggestion */}
-        <div style={{
-          width: "70px",
-          height: "70px",
-          borderRadius: "50%",
-          background: "linear-gradient(135deg, #a78bfa, #60a5fa)",
-          marginBottom: "6px",
-          boxShadow: "0 0 30px rgba(167,100,255,0.5)",
-        }} />
-        <div style={{
-          width: "110px",
-          height: "55px",
-          borderRadius: "55px 55px 0 0",
-          background: "linear-gradient(135deg, #7c3aed, #2563eb)",
-          opacity: 0.8,
-        }} />
-        {/* Initials overlay */}
-        <div style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -60%)",
-          fontSize: "3rem",
-          fontWeight: 800,
-          background: "linear-gradient(135deg, #ffffff, #c084fc)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          letterSpacing: "-0.05em",
-          textShadow: "none",
-        }}>KK</div>
-        {/* Inner glow */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          borderRadius: "50%",
-          background: "radial-gradient(circle at 35% 35%, rgba(167,100,255,0.15), transparent 60%)",
-        }} />
+        <img
+          src="https://ik.imagekit.io/Katariya/Personal/av.jpg?updatedAt=1774099014811"
+          alt="Krishna Katariya"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+          }}
+        />
       </div>
 
       {/* Orbiting dot */}
@@ -267,4 +234,4 @@ function TimelineItem({ item, index, activeYear, setActiveYear }: {
       <style>{`@media (max-width: 768px) { .timeline-item { padding: 0 !important; } .timeline-dot { display: none; } }`}</style>
     </div>
   );
-}
+              }
